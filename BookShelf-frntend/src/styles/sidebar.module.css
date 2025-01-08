@@ -1,0 +1,43 @@
+
+.wrap{
+    width: 306px;
+    background-color: #ffffff;
+    
+    margin-left: 40px;
+    flex-direction: column;
+    
+}
+.boo{
+    justify-self: center;
+}
+.mid{
+    justify-self:center ;
+}
+ul li{
+    list-style: none; 
+    cursor: pointer;
+    margin-top: 70px;
+}
+
+ul li:hover{
+    color:burlywood;
+}
+.last{
+    margin-top: 200px;
+    justify-self: center;
+} 
+.book {
+    color: black;
+    text-decoration: none;
+    
+}
+
+
+
+
+.last h6:hover {
+    text-decoration: underline;
+  }
+  .hightlight{
+    color: #FA7C54;;
+  }

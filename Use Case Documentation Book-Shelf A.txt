@@ -1,0 +1,75 @@
+Use Case Documentation: Book-Shelf App
+Use Case Name
+Managing Books on a Book-Shelf App
+
+Actors
+User: An individual who wants to upload, read, and manage books on the app.
+
+Primary Goal
+Allow users to upload, read, edit, and delete their books easily.
+
+Preconditions
+The user must be registered and logged in to the app.
+
+Postconditions
+The book is successfully uploaded, read, edited, or deleted as per the user's action.
+
+Main Success Scenario
+User Registration and Authentication
+
+Actor: User
+
+Description: The user registers on the app and logs in using their credentials.
+
+Outcome: The user gains access to the app's features.
+
+Upload a Book
+
+Actor: User
+
+Description: The user uploads a book file (e.g., PDF, ePub) to the app.
+
+Outcome: The book is added to the user's bookshelf with relevant details (title, author, genre, description).
+
+Read a Book
+
+Actor: User
+
+Description: The user selects a book from their bookshelf to read.
+
+Outcome: The book opens in the app's reader interface, allowing the user to read and use features like bookmarks and text adjustments.
+
+Edit Book Details
+
+Actor: User
+
+Description: The user edits the details of a previously uploaded book (e.g., changing the title or description).
+
+Outcome: The updated details are saved and displayed correctly on the user's bookshelf.
+
+Delete a Book
+
+Actor: User
+
+Description: The user deletes a book from their bookshelf.
+
+Outcome: The book is removed from the user's bookshelf and storage.
+
+Alternate Scenarios
+Book Upload Failure: If the book file format is unsupported, the user is notified, and the upload is aborted.
+
+Authentication Failure: If the user's login credentials are incorrect, they are prompted to retry or reset their password.
+
+Network Issues: If there are connectivity problems, the user is informed, and the action is retried once the connection is restored.
+
+Exceptions
+File Corruption: If an uploaded book file is corrupted, the user is notified, and the upload process is stopped.
+
+Data Loss: Implement regular backups to prevent data loss and ensure that deleted books are permanently removed from storage.
+
+Notes
+Security: Ensure all user data and book files are stored securely with encryption and access controls.
+
+Usability: Design a user-friendly interface to make navigation and book management intuitive.
+
+This should provide a comprehensive overview of your book-shelf app's use cases.

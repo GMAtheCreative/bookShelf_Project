@@ -1,0 +1,33 @@
+.nav{
+    width: 1520px;
+    height: 60px;
+   
+
+}
+.search{
+    width: 541px;
+    height: 49px;
+    background-color: #DCDCDC;
+    margin-left: 450px;
+    margin-top: 20px;
+    
+}
+.navBar{
+   list-style: none;
+   display: flex;
+   gap: 60px;
+   justify-self: center;
+   margin-top: 30px;
+   color: black;
+
+}
+.navBar li:hover{
+    color:black;
+}
+.book{
+    text-decoration: none;
+    color:black;
+}
+.wrap{
+    justify-self: center;
+}

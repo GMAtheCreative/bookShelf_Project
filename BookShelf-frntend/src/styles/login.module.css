@@ -1,0 +1,58 @@
+.wrapper{
+    width: 565px;
+    margin: 70px;
+    justify-self: center;
+    background-color: white;
+    height: 600px;
+          
+}
+.first{
+    justify-self: center;
+}
+.second{
+    justify-self: center;
+    margin-top: 60px;
+}
+.shelf{
+    justify-self: center;
+}
+
+.input{
+width: 300px;
+height: 60px;
+color: black;
+margin: 0px 0px 16px 0px;
+padding: 0px 0px 0px 10px;
+border: 1px solid black;
+
+
+
+
+
+}
+.btn{
+width: 350px;
+height: 48px;
+border: none;
+background-color:#FA7C54;
+color: #ffff;
+border-radius: 15px;
+margin-top: 50px;
+margin-left: 100px;
+
+}
+.btn:hover{
+    background-color:burlywood;
+
+}
+
+.both{
+font-size: 20px;
+margin-top: 60px;
+justify-self: center;
+}  
+.your{
+    color: black;
+} 
+
+

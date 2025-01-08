@@ -1,0 +1,9 @@
+.nam{
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 1rem;
+    justify-self: center;
+    margin-top: -580px;
+    margin-left: 300px;
+    
+}

@@ -1,0 +1,40 @@
+.wrap{
+    justify-self: center;
+
+    height: 450px;
+    width: 500px;
+    background-color: white;
+    margin-top: 70px;
+}
+.all{
+    justify-self: center;
+}
+.top{
+    justify-self: center;
+}
+.put{
+    width: 300px;
+    line-height: 40px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    justify-self: center;
+
+}
+
+.btn{
+    width: 350px;
+    height: 48px;
+    border: none;
+    background-color:#FA7C54;
+    color: #ffff;
+    border-radius: 15px;
+   margin-top: 50px;
+
+    
+}
+.btn:hover{
+    background-color:burlywood;
+
+}
+.hightlight{
+    color: #FA7C54;;
+  }
