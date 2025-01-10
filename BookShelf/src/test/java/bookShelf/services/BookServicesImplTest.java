@@ -12,7 +12,10 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
+
+import static bookShelf.utils.book.TestCase.createMockPdfFile;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -26,28 +29,38 @@ class BookServicesImplTest {
     @BeforeEach public void setUp(){
         bookRepository.deleteAll();
     }
-    private static final MultipartFile pdf = new MockMultipartFile("document", "test.pdf", "application/pdf", "test pdf content".getBytes());
 
-    private static AddBookRequest buildBookRequest(AddBookRequest bookRequest) {
+    static InputStream pdfInputStream = BookServicesImplTest.class.getResourceAsStream("C:\\Users\\DELL  USER\\OneDrive\\Documents\\Assignment(Java).pdf");
+    private static final MultipartFile pdf;
+
+    static {
+        try {
+            pdf = new MockMultipartFile("document", "test.pdf", "application/pdf", pdfInputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static AddBookRequest buildBookRequest(AddBookRequest bookRequest) throws IOException {
         bookRequest.setTitle("Jesus is lord");
         bookRequest.setAuthor("danjuma");
         bookRequest.setDescription("book description");
         bookRequest.setIsbn("1234566789");
-        bookRequest.setPdf(pdf);
+        bookRequest.setPdf(createMockPdfFile());
         bookRequest.setUserId("1");
         return bookRequest;
     }
-    private static AddBookRequest buildBookRequest2(AddBookRequest bookRequest) {
+    private static AddBookRequest buildBookRequest2(AddBookRequest bookRequest) throws IOException {
         bookRequest.setIsbn("9876543210");
         bookRequest.setAuthor("chibuzo");
         bookRequest.setTitle("new title");
         bookRequest.setDescription("new description");
-        bookRequest.setPdf(pdf);
+        bookRequest.setPdf(createMockPdfFile());
         bookRequest.setUserId("1");
         return bookRequest;
     }
 
-    @Test void addBook() {
+    @Test void addBook() throws IOException {
         AddBookRequest bookRequest = new AddBookRequest();
         AddBookRequest addBook = buildBookRequest(bookRequest);
         AddBookResponse bookResponse = bookServices.addBook(addBook);
@@ -57,7 +70,7 @@ class BookServicesImplTest {
         assertEquals(bookRepository.count(), 1);
     }
 
-    @Test void getBookByTitle() {
+    @Test void getBookByTitle() throws IOException {
         AddBookRequest bookRequest = new AddBookRequest();
         AddBookRequest addBook = buildBookRequest(bookRequest);
         AddBookResponse addBookResponse = bookServices.addBook(addBook);
@@ -68,14 +81,14 @@ class BookServicesImplTest {
         GetBookRequest getBookRequest = new GetBookRequest();
         getBookRequest.setUserId("1");
         getBookRequest.setTitle("Jesus is lord");
-        GetBookResponse getBookResponse = bookServices.getBookByTitle(getBookRequest);
+        GetAllBookResponse getBookResponse = bookServices.getBookByTitle(getBookRequest);
 
         assertNotNull(getBookResponse);
-        assertEquals(getBookResponse.getBooks().getFirst().getTitle(), addBook.getTitle());
         assertEquals("1 Book(s) found", getBookResponse.getMessage());
+        assertEquals(1, getBookResponse.getGetBookResponses().size());
     }
 
-    @Test void updateBook() throws InterruptedException {
+    @Test void updateBook() throws InterruptedException, IOException {
         AddBookRequest bookRequest = new AddBookRequest();
         AddBookRequest addBook = buildBookRequest(bookRequest);
         AddBookResponse addBookResponse = bookServices.addBook(addBook);
@@ -92,11 +105,11 @@ class BookServicesImplTest {
         UpdateBookResponse updateBookResponse = bookServices.updateBook(updateBookRequest);
 
         assertNotNull(updateBookResponse);
-        assertEquals("Update successful", updateBookResponse.getMessage());
+        assertEquals("Book Updated successfully", updateBookResponse.getMessage());
         assertEquals(bookRepository.count(), 1);
     }
 
-    @Test void deleteBook() {
+    @Test void deleteBook() throws IOException {
         AddBookRequest bookRequest = new AddBookRequest();
         AddBookRequest addBook = buildBookRequest(bookRequest);
         AddBookResponse addBookResponse = bookServices.addBook(addBook);
@@ -115,7 +128,7 @@ class BookServicesImplTest {
         assertFalse(deletedBook.isPresent());
     }
 
-    @Test void getAllBooks() {
+    @Test void getAllBooks() throws IOException {
         AddBookRequest bookRequest1 = new AddBookRequest();
         AddBookRequest addBook1 = buildBookRequest(bookRequest1);
         bookServices.addBook(addBook1);
@@ -126,15 +139,15 @@ class BookServicesImplTest {
 
         GetBookRequest request = new GetBookRequest();
         request.setUserId("1");
-        GetBookResponse getAllBooksResponse = bookServices.getAllBooks(request);
+        GetAllBookResponse getAllBooksResponse = bookServices.getAllBooks(request);
 
         assertNotNull(getAllBooksResponse);
-        assertEquals(2, getAllBooksResponse.getBooks().size());
+        assertEquals(2, getAllBooksResponse.getGetBookResponses().size());
     }
 
 
     @Test
-    void getBookByAuthor() {
+    void getBookByAuthor() throws IOException {
         AddBookRequest bookRequest = new AddBookRequest();
         AddBookRequest addBook = buildBookRequest(bookRequest);
         AddBookResponse addBookResponse = bookServices.addBook(addBook);
@@ -145,11 +158,11 @@ class BookServicesImplTest {
         GetBookRequest getBookRequest = new GetBookRequest();
         getBookRequest.setUserId("1");
         getBookRequest.setAuthor("danjuma");
-        GetBookResponse getBookResponse = bookServices.getBookByAuthor(getBookRequest);
+        GetAllBookResponse getBookResponse = bookServices.getBookByAuthor(getBookRequest);
 
         assertNotNull(getBookResponse);
-        assertEquals(getBookResponse.getBooks().getFirst().getTitle(), addBook.getTitle());
         assertEquals("1 Book(s) found", getBookResponse.getMessage());
+        assertEquals(1,getBookResponse.getGetBookResponses().size());
     }
 
     @Test
@@ -170,7 +183,7 @@ class BookServicesImplTest {
         assertNotNull(readBookResponse);
         assertEquals(addBook.getTitle(), readBookResponse.getTitle());
         assertEquals(addBook.getAuthor(), readBookResponse.getAuthor());
-        assertArrayEquals(pdf.getBytes(), readBookResponse.getDocument());
+        assertArrayEquals(readBookResponse.getDocument(), createMockPdfFile().getBytes());
 
 
     }

@@ -7,6 +7,8 @@ import java.util.List;
 
 @Data
 public class GetBookResponse {
-    List<Book> books;
-    private String message;
+    private byte[] images;
+    private String title;
+    private String author;
+    private String description;
 }

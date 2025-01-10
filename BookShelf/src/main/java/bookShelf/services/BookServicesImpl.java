@@ -9,9 +9,12 @@ import bookShelf.exception.bookException.MediaStorageException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import static bookShelf.utils.book.BookMapping.*;
 import static bookShelf.utils.book.BookValidation.extractImageFromFirstPage;
+import static bookShelf.utils.book.GetAllBookMapping.getGetBookResponse;
 
 
 @Service
@@ -23,56 +26,26 @@ public class BookServicesImpl implements BookServices {
     @Override
     public AddBookResponse addBook(AddBookRequest addBookRequest) {
         Book book = new Book();
-        book.setAuthor(addBookRequest.getAuthor());
-        book.setIsbn(addBookRequest.getIsbn());
-        book.setDescription(addBookRequest.getDescription());
-        book.setTitle(addBookRequest.getTitle());
-        book.setUserId(addBookRequest.getUserId());
-
-        try {
-            if (addBookRequest.getPdf() != null) {
-                book.setDocument(addBookRequest.getPdf().getBytes());
-                extractImageFromFirstPage(addBookRequest.getPdf(), book);
-            }
-        }
-        catch (IOException e) {
-            throw new MediaStorageException("Could not store media files. Please try again!", e);
-        }
-        bookRepository.save(book);
+        Book addedBook = addBookRequestMapping(book, addBookRequest);
+        bookRepository.save(addedBook);
         AddBookResponse response = new AddBookResponse();
         response.setMessage("Book added successfully");
         return response;
     }
 
-
-
     @Override
-    public GetBookResponse getBookByTitle(GetBookRequest getBookRequest) {
+    public GetAllBookResponse getBookByTitle(GetBookRequest getBookRequest) {
         List<Book> books = bookRepository.findByUserIdAndTitle(getBookRequest.getUserId(), getBookRequest.getTitle());
-        if (books.isEmpty()) {
-            throw new BookNotFound("Book not found");
-        }
-        GetBookResponse response = new GetBookResponse();
-        response.setBooks(books);
-        int numberOfBooks = response.getBooks().size();
-        response.setMessage(numberOfBooks + " Book(s) found");
-        return response;
+        bookIsNotFound(books);
+        return getGetBookResponse(books);
     }
 
     @Override
-    public GetBookResponse getBookByAuthor(GetBookRequest getBookRequest) {
-//        GetBookRequest request = new GetBookRequest();
+    public GetAllBookResponse getBookByAuthor(GetBookRequest getBookRequest) {
         List<Book> books = bookRepository.findByUserIdAndAuthor(getBookRequest.getUserId(), getBookRequest.getAuthor());
-        if (books.isEmpty()) {
-            throw new BookNotFound("Book not found");
-        }
-        GetBookResponse response = new GetBookResponse();
-        response.setBooks(books);
-        int numberOfBooks = response.getBooks().size();
-        response.setMessage(numberOfBooks + " Book(s) found");
-        return response;
+        bookIsNotFound(books);
+        return getGetBookResponse(books);
     }
-
 
     @Override
     public UpdateBookResponse updateBook(UpdateBookRequest updateBookRequest) {
@@ -81,35 +54,17 @@ public class BookServicesImpl implements BookServices {
                         updateBookRequest.getOriginalTitle(),
                         updateBookRequest.getOriginalAuthor())
                 .orElseThrow(() -> new BookNotFound("Book not found"));
+        Book updatedBook = updateBookRequestMapping(existingBook, updateBookRequest);
 
-        existingBook.setTitle(updateBookRequest.getTitle());
-        existingBook.setAuthor(updateBookRequest.getAuthor());
-        existingBook.setDescription(updateBookRequest.getDescription());
-        existingBook.setUserId(updateBookRequest.getUserId());
-
-        try {
-            if (updateBookRequest.getImage() != null) {
-                existingBook.setImage(updateBookRequest.getImage().getBytes());
-            }
-            if (updateBookRequest.getPdf() != null) {
-                existingBook.setDocument(updateBookRequest.getPdf().getBytes());
-            }
-        } catch (IOException e) {
-            throw new MediaStorageException("Could not store media files. Please try again!", e);
-        }
-
-        Book updatedBook = bookRepository.save(existingBook);
-
-        UpdateBookResponse response = new UpdateBookResponse();
-        response.setMessage("Update successful");
-
-        return response;
+        bookRepository.save(updatedBook);
+        return updateBookResponseMapping(existingBook);
     }
 
 
     @Override
     public DeleteBookResponse deleteBook(DeleteBookRequest deleteBookRequest) {
-        Book book = bookRepository.findByUserIdAndTitleAndAuthor(deleteBookRequest.getUserId(),
+        Book book = bookRepository.findByUserIdAndTitleAndAuthor
+                        (deleteBookRequest.getUserId(),
                         deleteBookRequest.getTitle(),
                         deleteBookRequest.getAuthor())
                 .orElseThrow(() -> new BookNotFound("Book not found"));
@@ -123,12 +78,9 @@ public class BookServicesImpl implements BookServices {
 
 
     @Override
-    public GetBookResponse getAllBooks(GetBookRequest request) {
+    public GetAllBookResponse getAllBooks(GetBookRequest request) {
         List<Book> books = bookRepository.findAllByUserId(request.getUserId());
-        GetBookResponse response = new GetBookResponse();
-        response.setBooks(books);
-        response.setMessage(books.size() + " Book(s) found");
-        return response;
+        return getGetBookResponse(books);
     }
 
     @Override
@@ -145,6 +97,10 @@ public class BookServicesImpl implements BookServices {
         return response;
     }
 
+
+    private static void bookIsNotFound (List<Book> books) {
+        if(books.isEmpty()) throw new BookNotFound("Book not found");
+    }
 
 
 }

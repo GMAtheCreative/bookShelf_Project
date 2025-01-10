@@ -8,15 +8,15 @@ public interface BookServices {
 
     AddBookResponse addBook(AddBookRequest addBookRequest);
 
-    GetBookResponse getBookByTitle(GetBookRequest getBookRequest);
+    GetAllBookResponse getBookByTitle(GetBookRequest getBookRequest);
 
     UpdateBookResponse updateBook(UpdateBookRequest updateBookRequest);
 
-    GetBookResponse getAllBooks(GetBookRequest request);
+    GetAllBookResponse getAllBooks(GetBookRequest request);
 
     DeleteBookResponse deleteBook(DeleteBookRequest deleteBookRequest);
 
-    GetBookResponse getBookByAuthor(GetBookRequest getBookRequest);
+    GetAllBookResponse getBookByAuthor(GetBookRequest getBookRequest);
 
     ReadBookResponse readBook (ReadBookRequest readBook);
 }
