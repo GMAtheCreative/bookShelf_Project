@@ -12,8 +12,8 @@ import java.util.List;
 public class User {
     @Id
     private String id;
-    private String UserName;
-    private String Email;
-    private String Password;
+    private String userName;
+    private String email;
+    private String password;
     private byte[] profilePicture;
 }
