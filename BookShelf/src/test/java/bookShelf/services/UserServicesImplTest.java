@@ -2,16 +2,16 @@ package bookShelf.services;
 
 import bookShelf.data.models.User;
 import bookShelf.data.repositories.UserRepository;
-import bookShelf.dtos.requests.user.ChangeUserNameRequest;
-import bookShelf.dtos.requests.user.LoginUserRequest;
-import bookShelf.dtos.requests.user.RegisterUserRequest;
-import bookShelf.dtos.responses.user.ChangeUserNameResponse;
-import bookShelf.dtos.responses.user.LoginUserResponse;
-import bookShelf.dtos.responses.user.RegisterUserResponse;
+import bookShelf.dtos.requests.user.*;
+import bookShelf.dtos.responses.user.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -83,11 +83,52 @@ class UserServicesImplTest {
 
 
     @Test
-    void profilePic() {
+    void profilePic() throws IOException {
+        RegisterUserRequest request = new RegisterUserRequest();
+        RegisterUserRequest registerUser = registerUser1(request);
+        userServices.registerUser(registerUser);
+        assertEquals(1, userRepository.count());
+
+        LoginUserRequest emailLogin = new LoginUserRequest();
+        LoginUserRequest loginUser = loginUserWithEmail(emailLogin);
+        LoginUserResponse userResponse = userServices.loginWithEmail(loginUser);
+
+        MultipartFile mockFile = new MockMultipartFile
+                ("picture", "profile-pic.jpg",
+                        "image/jpeg", "test image content".getBytes());
+        UploadProfilePicRequest pictureRequest = new UploadProfilePicRequest();
+        pictureRequest.setUserId(userResponse.getId());
+        pictureRequest.setPicture(mockFile);
+
+        UploadProfilePicResponse response = userServices.profilePic(pictureRequest);
+        User updatedUser = userRepository.findById(userResponse.getId()).orElse(null);
+
+        assertNotNull(updatedUser);
+        assertNotNull(updatedUser.getProfilePicture());
+        assertArrayEquals(mockFile.getBytes(), updatedUser.getProfilePicture());
+        assertEquals("Profile picture uploaded successfully", response.getMessage());
     }
 
     @Test
     void changePassword() {
+        RegisterUserRequest request = new RegisterUserRequest();
+        RegisterUserRequest registerUser = registerUser1(request);
+        userServices.registerUser(registerUser);
+        assertEquals(1, userRepository.count());
+
+        LoginUserRequest emailLogin = new LoginUserRequest();
+        LoginUserRequest loginUser = loginUserWithEmail(emailLogin);
+        LoginUserResponse userResponse = userServices.loginWithEmail(loginUser);
+
+        ChangePasswordRequest passwordRequest = new ChangePasswordRequest();
+        passwordRequest.setOldPassword("@Password1");
+        passwordRequest.setNewPassword("@Password2");
+        passwordRequest.setConfirmPassword("@Password2");
+        passwordRequest.setUserId(userResponse.getId());
+        ChangePasswordResponse passwordResponse = userServices.changePassword(passwordRequest);
+
+        assertEquals(1, userRepository.count());
+        assertEquals("Password changed successfully", passwordResponse.getMessage());
     }
 
     @Test

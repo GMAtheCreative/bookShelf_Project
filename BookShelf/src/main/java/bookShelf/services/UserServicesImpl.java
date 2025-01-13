@@ -9,12 +9,14 @@ import bookShelf.dtos.responses.user.*;
 import bookShelf.exception.bookException.BookNotFound;
 import bookShelf.exception.userException.InvalidEmail;
 import bookShelf.exception.userException.InvalidPassword;
+import bookShelf.exception.userException.ProfilePicException;
 import bookShelf.exception.userException.UserNotFound;
 import bookShelf.utils.user.RegexValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 import static bookShelf.utils.user.RegexValidation.validateEmail;
@@ -84,19 +86,47 @@ public class UserServicesImpl implements UserServices {
         LoginUserResponse response = new LoginUserResponse();
         response.setMessage(loginUser.getEmail()+ " Welcome.... Lets get reading");
         response.setId(users.getId());
-//        System.out.println(users.getId());
         return response;
     }
 
     @Override
     public UploadProfilePicResponse profilePic(UploadProfilePicRequest profilePic) {
-        return null;
+            User user = userRepository.findById(profilePic.getUserId())
+                    .orElseThrow(() -> new UserNotFound("User not found"));
+
+            try {
+                byte[] profilePicBytes = profilePic.getPicture().getBytes();
+                user.setProfilePicture(profilePicBytes);
+                userRepository.save(user);
+                UploadProfilePicResponse response = new UploadProfilePicResponse();
+                response.setMessage("Profile picture uploaded successfully");
+                return response;
+            }
+            catch (IOException e) {
+                throw new ProfilePicException("Failed to upload profile picture", e);
+            }
+
     }
 
     @Override
     public ChangePasswordResponse changePassword(ChangePasswordRequest changePassword) {
+        User existingUser = userRepository.findById(changePassword.getUserId())
+                .orElseThrow(() -> new UserNotFound("user not found"));
+        if (!passwordEncoder.matches(changePassword.getOldPassword(), existingUser.getPassword())) {
+            throw new InvalidPassword("password is incorrect");
+        }
+        validatePassword(changePassword.getNewPassword());
+        if (!changePassword.getNewPassword().equals(changePassword.getConfirmPassword())) {
+            throw new InvalidPassword("Confirmation must match the new password");
+        }
+        String hashedNewPassword = passwordEncoder.encode(changePassword.getNewPassword());
+        existingUser.setPassword(hashedNewPassword);
+        userRepository.save(existingUser);
 
-        return null;
+        ChangePasswordResponse response = new ChangePasswordResponse();
+        response.setMessage("Password changed successfully");
+
+        return response;
     }
 
     @Override
