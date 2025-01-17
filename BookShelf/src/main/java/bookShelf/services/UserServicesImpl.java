@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 
+import static bookShelf.utils.user.ProfilePictureGenerator.generateProfilePicture;
 import static bookShelf.utils.user.RegexValidation.validateEmail;
 import static bookShelf.utils.user.RegexValidation.validatePassword;
 
@@ -43,6 +44,7 @@ public class UserServicesImpl implements UserServices {
         user.setUserName(registerUser.getUsername());
         user.setPassword(hashedPassword);
         user.setEmail(hashedEmail);
+        user.setProfilePicture(generateProfilePicture(registerUser.getUsername()));
         userRepository.save(user);
 
         RegisterUserResponse response = new RegisterUserResponse();
