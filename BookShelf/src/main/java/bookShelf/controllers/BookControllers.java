@@ -5,21 +5,25 @@ import bookShelf.dtos.responses.book.*;
 import bookShelf.exception.bookException.BookNotFound;
 import bookShelf.exception.bookException.MediaStorageException;
 import bookShelf.services.BookServices;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/books")
+@Slf4j
 class BookControllers {
 
     @Autowired
     private BookServices bookServices;
 
-    // Add a new book
-    @PostMapping("/add")
-    public ResponseEntity<?> addBook(@RequestBody AddBookRequest addBookRequest) {
+    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> addBook(@ModelAttribute AddBookRequest addBookRequest) {
+        log.info("BOOK:: {}", addBookRequest);
         try {
             AddBookResponse response = bookServices.addBook(addBookRequest);
             return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -30,7 +34,6 @@ class BookControllers {
         }
     }
 
-    // Get a book by title
     @GetMapping("/title")
     public ResponseEntity<?> getBookByTitle(@RequestParam String userId, @RequestParam String title) {
         try {
@@ -46,7 +49,6 @@ class BookControllers {
         }
     }
 
-    // Get a book by author
     @GetMapping("/author")
     public ResponseEntity<?> getBookByAuthor(@RequestParam String userId, @RequestParam String author) {
         try {
@@ -62,7 +64,6 @@ class BookControllers {
         }
     }
 
-    // Update a book
     @PutMapping("/update")
     public ResponseEntity<?> updateBook(@RequestBody UpdateBookRequest updateBookRequest) {
         try {
@@ -88,7 +89,6 @@ class BookControllers {
         }
     }
 
-    // Get all books for a user
     @GetMapping("/all")
     public ResponseEntity<?> getAllBooks(@RequestParam String userId) {
         try {
@@ -101,7 +101,6 @@ class BookControllers {
         }
     }
 
-    // Read a book (retrieve document)
     @GetMapping("/read")
     public ResponseEntity<?> readBook(@RequestParam String userId, @RequestParam String title, @RequestParam String author) {
         try {

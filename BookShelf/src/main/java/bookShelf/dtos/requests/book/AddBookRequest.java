@@ -1,14 +1,17 @@
 package bookShelf.dtos.requests.book;
 
-import lombok.Data;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@Data
+//@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
 public class AddBookRequest {
     private String title;
     private String author;
     private String description;
-    private String isbn;
     private MultipartFile pdf;
     private String userId;
 }

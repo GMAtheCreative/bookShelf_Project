@@ -5,36 +5,40 @@ import bookShelf.dtos.requests.book.AddBookRequest;
 import bookShelf.dtos.requests.book.UpdateBookRequest;
 import bookShelf.dtos.responses.book.UpdateBookResponse;
 import bookShelf.exception.bookException.MediaStorageException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.sql.SQLOutput;
+import java.io.InputStream;
 
 import static bookShelf.utils.book.BookValidation.extractImageFromFirstPage;
+import static sun.font.CreatedFontTracker.MAX_FILE_SIZE;
 
+@Slf4j
 public class BookMapping {
 
-    public static Book addBookRequestMapping (Book book, AddBookRequest addBookRequest) {
-
+    public static Book addBookRequestMapping(Book book, AddBookRequest addBookRequest) {
         book.setAuthor(addBookRequest.getAuthor());
-        book.setIsbn(addBookRequest.getIsbn());
         book.setDescription(addBookRequest.getDescription());
         book.setTitle(addBookRequest.getTitle());
         book.setUserId(addBookRequest.getUserId());
 
-        try {
-            if (addBookRequest.getPdf() != null) {
-                book.setDocument(addBookRequest.getPdf().getBytes());
-//                extractImageFromFirstPage(addBookRequest, book);
-                System.out.println("bok enter if");
-            }
-            else{
-                throw new MediaStorageException("media is empty");
-            }
+        log.info("book:: {}", addBookRequest);
+        if (addBookRequest.getPdf() == null || addBookRequest.getPdf().isEmpty()) {
+            throw new MediaStorageException("PDF file is required");
         }
-        catch (IOException e) {
-            System.out.println("it never entered the extract method");
+
+        if (addBookRequest.getPdf().getSize() > MAX_FILE_SIZE) {
+            throw new MediaStorageException("File size exceeds the maximum allowed limit of 100MB");
+        }
+
+        try (InputStream inputStream = addBookRequest.getPdf().getInputStream()) {
+            byte[] fileBytes = inputStream.readAllBytes();
+            book.setDocument(fileBytes);
+            extractImageFromFirstPage(addBookRequest, book);
+        } catch (IOException e) {
             throw new MediaStorageException("Could not store media files. Please try again!", e);
         }
+
         return book;
     }
 

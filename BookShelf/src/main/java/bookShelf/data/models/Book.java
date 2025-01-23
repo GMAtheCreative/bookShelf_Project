@@ -12,7 +12,6 @@ public class Book {
     private String title;
     private String author;
     private String description;
-    private String isbn;
     private byte[] image;
     private byte[] document;
     private String userId;

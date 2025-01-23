@@ -45,13 +45,11 @@ class BookServicesImplTest {
         bookRequest.setTitle("Jesus is lord");
         bookRequest.setAuthor("danjuma");
         bookRequest.setDescription("book description");
-        bookRequest.setIsbn("1234566789");
         bookRequest.setPdf(createMockPdfFile());
         bookRequest.setUserId("1");
         return bookRequest;
     }
     private static AddBookRequest buildBookRequest2(AddBookRequest bookRequest) throws IOException {
-        bookRequest.setIsbn("9876543210");
         bookRequest.setAuthor("chibuzo");
         bookRequest.setTitle("new title");
         bookRequest.setDescription("new description");
